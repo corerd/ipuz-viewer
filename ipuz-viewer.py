@@ -3,10 +3,6 @@ import ipuz
 
 from render import Render
 
-# Paths relative to VsCode workspace folder
-PUZZLE_FILE = 'ipuz-viewer/fixtures/ipuz/example.ipuz'
-HTML_FILE = 'crossword.html'
-
 
 def get_literal(cell_value):
     '''Return the cell literal value
@@ -25,12 +21,12 @@ def get_literal(cell_value):
     return cell_value
 
 
-def viewer():
-    with open(PUZZLE_FILE) as puzzle_file:
+def viewer(ipuz_file_name, rendered_file_name):
+    with open(ipuz_file_name) as puzzle_file:
         ipuz_dict = ipuz.read(puzzle_file.read())  # may raise ipuz.IPUZException    
     puzzle = crossword.from_ipuz(ipuz_dict)
 
-    draw = Render(HTML_FILE, puzzle.block)
+    draw = Render(rendered_file_name, puzzle.block)
     draw.heading(1, 'Crossword example')
     draw.heading(2, '{} by {}'.format(puzzle.meta['title'], puzzle.meta['publisher']))
 
@@ -67,12 +63,13 @@ def viewer():
     draw.grid_end()
 
     draw.rights(puzzle.meta['rights'])
-
     draw.finalize()
-    print('Generate:', PUZZLE_FILE)
-
-    return 0
 
 
 if __name__ == "__main__":
-    exit(viewer())
+    print('Converting IPUZ to HTML...')
+
+    # Paths relative to VsCode workspace folder
+    viewer( 'ipuz-viewer/fixtures/ipuz/example.ipuz',
+            'crossword.html' )
+    print('Done!')
