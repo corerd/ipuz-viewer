@@ -1,8 +1,19 @@
 HTML_HEAD = '''
 <!DOCTYPE html>
+<html lang="en">
 <html>
 <head>
+<title>IPUZ Viewer</title>
 <style>
+.box {
+  float: left;
+  padding: 10px;
+}
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
 table, th, td {
   border: 1px solid black;
 }
@@ -21,6 +32,8 @@ HTML_TAIL = '''
 </body>
 </html>
 '''
+
+HTML_HEADING = '<h{hd}>{0}</h{hd}>'
 
 HTML_TABLE_OPEN  = '<table>'
 HTML_TABLE_CLOSE = '</table>'
@@ -43,7 +56,7 @@ class Render:
         self.html_file = open(html_file_name, 'w')
         self.html_file.write(HTML_HEAD)
     
-    def close(self):
+    def finalize(self):
         self.html_file.write(HTML_TAIL)
         self.html_file.close()
 
@@ -72,4 +85,28 @@ class Render:
                 solution = '&nbsp;'
             print(HTML_TABLE_CELL.format(apex, solution, bg=color), file=self.html_file)
         print(HTML_TABLE_ROW_CLOSE, file=self.html_file)
+
+    def container_begin(self):
+        print('<div class="clearfix">', file=self.html_file)
+
+    def container_end(self):
+        print('</div>', file=self.html_file)
+
+    def box_begin(self):
+        print('<div class="box">', file=self.html_file)
+
+    def box_end(self):
+        print('</div>', file=self.html_file)
+        
+    def heading(self, level, text):
+        '''Draw heading'''
+        print(HTML_HEADING.format(text, hd=level), file=self.html_file)
+
+    def line(self, text):
+        '''Draw a single line with terminator'''
+        print(text+'<br>', file=self.html_file)
+    
+    def rights(self, text):
+        '''Draw acknowledgements'''
+        print('<p>&copy; Copyright {}</p>'.format(text), file=self.html_file)
     

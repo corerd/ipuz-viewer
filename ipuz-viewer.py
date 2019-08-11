@@ -30,21 +30,45 @@ def viewer():
         ipuz_dict = ipuz.read(puzzle_file.read())  # may raise ipuz.IPUZException    
     puzzle = crossword.from_ipuz(ipuz_dict)
 
-    html = Render(HTML_FILE, puzzle.block)
+    draw = Render(HTML_FILE, puzzle.block)
+    draw.heading(1, 'Crossword example')
+    draw.heading(2, '{} by {}'.format(puzzle.meta['title'], puzzle.meta['publisher']))
 
     # draw crossword board
-    html.grid_begin()
+    draw.grid_begin()
     for row in puzzle:
-        html.grid_append([(get_literal(cell.puzzle), ' ') for cell in row])
-    html.grid_end()
+        draw.grid_append([(get_literal(cell.puzzle), ' ') for cell in row])
+    draw.grid_end()
+
+    # container to hold clues
+    draw.container_begin()
+
+    # disply ACROSS clues
+    draw.box_begin()
+    draw.heading(3, 'ACROSS')
+    for number, clue in puzzle.clues.across():
+        draw.line('{} {}'.format(number, clue))
+    draw.box_end()
+    
+    # disply DOWN clues
+    draw.box_begin()
+    draw.heading(3, 'DOWN')
+    for number, clue in puzzle.clues.down():
+        draw.line('{} {}'.format(number, clue))
+    draw.box_end()
+
+    draw.container_end()
 
     # draw solution
-    html.grid_begin()
+    draw.heading(2, 'Solution')
+    draw.grid_begin()
     for row in puzzle:
-        html.grid_append([(get_literal(cell.puzzle), cell.solution) for cell in row])
-    html.grid_end()
+        draw.grid_append([(get_literal(cell.puzzle), cell.solution) for cell in row])
+    draw.grid_end()
 
-    html.close()
+    draw.rights(puzzle.meta['rights'])
+
+    draw.finalize()
     print('Generate:', PUZZLE_FILE)
 
     return 0
