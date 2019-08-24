@@ -1,7 +1,7 @@
 import crossword
 import ipuz
 
-from render import Render
+from htmlpage import HtmlPage
 
 
 def get_literal(cell_value):
@@ -26,7 +26,7 @@ def viewer(ipuz_file_name, rendered_file_name):
         ipuz_dict = ipuz.read(puzzle_file.read())  # may raise ipuz.IPUZException    
     puzzle = crossword.from_ipuz(ipuz_dict)
 
-    draw = Render(rendered_file_name, puzzle.block)
+    draw = HtmlPage(rendered_file_name, puzzle.block)
     draw.heading(1, 'Crossword example')
     draw.heading(2, '{} by {}'.format(puzzle.meta['title'], puzzle.meta['publisher']))
 

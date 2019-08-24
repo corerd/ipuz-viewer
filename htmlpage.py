@@ -1,9 +1,11 @@
-HTML_HEAD = '''
+HTML_PAGE_HEAD = '''
 <!DOCTYPE html>
 <html lang="en">
 <html>
 <head>
-<title>IPUZ Viewer</title>
+<title>Crossword Viewer</title>
+<meta name="author" content="Corrado Ubezio https://github.com/corerd">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 .box {
   float: left;
@@ -28,7 +30,7 @@ th, td {
 <body>
 '''
 
-HTML_TAIL = '''
+HTML_PAGE_TAIL = '''
 </body>
 </html>
 '''
@@ -46,7 +48,7 @@ HTML_TABLE_CELL = '<td{bg}><small><sup>{0}</sup></small>{1}</td>'
 BLOCKCELL_DEFAULT_ID = '#'
 
 
-class Render:
+class HtmlPage:
     def __init__(self, html_file_name, blockcell_id=None):
         if blockcell_id is None:
             self.blockcell_id = BLOCKCELL_DEFAULT_ID
@@ -54,10 +56,10 @@ class Render:
             self.blockcell_id = blockcell_id
         self.html_file_name = html_file_name
         self.html_file = open(html_file_name, 'w')
-        self.html_file.write(HTML_HEAD)
+        self.html_file.write(HTML_PAGE_HEAD)
     
     def finalize(self):
-        self.html_file.write(HTML_TAIL)
+        self.html_file.write(HTML_PAGE_TAIL)
         self.html_file.close()
 
     def grid_begin(self):
