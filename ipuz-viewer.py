@@ -26,44 +26,36 @@ def viewer(ipuz_file_name, rendered_file_name):
         ipuz_dict = ipuz.read(puzzle_file.read())  # may raise ipuz.IPUZException    
     puzzle = crossword.from_ipuz(ipuz_dict)
 
-    draw = HtmlPage(rendered_file_name, puzzle.block)
-    draw.heading(1, 'Crossword example')
-    draw.heading(2, '{} by {}'.format(puzzle.meta['title'], puzzle.meta['publisher']))
+    with HtmlPage(rendered_file_name) as draw:
+        draw.heading(1, 'Crossword example')
+        draw.heading(2, '{} by {}'.format(puzzle.meta['title'], puzzle.meta['publisher']))
 
-    # draw crossword board
-    draw.grid_begin()
-    for row in puzzle:
-        draw.grid_append([(get_literal(cell.puzzle), ' ') for cell in row])
-    draw.grid_end()
+        # draw the empty crossword board
+        with draw.crossword(puzzle.block) as grid:
+            for row in puzzle:
+                grid.add_row([(get_literal(cell.puzzle), ' ') for cell in row])
 
-    # container to hold clues
-    draw.container_begin()
+        # container to hold clues
+        with draw.column_container() as _:
+            # disply ACROSS clues
+            with draw.column() as _:
+                draw.heading(3, 'ACROSS')
+                for number, clue in puzzle.clues.across():
+                    draw.line('{} {}'.format(number, clue))
+            
+            # disply DOWN clues
+            with draw.column() as _:
+                draw.heading(3, 'DOWN')
+                for number, clue in puzzle.clues.down():
+                    draw.line('{} {}'.format(number, clue))
 
-    # disply ACROSS clues
-    draw.box_begin()
-    draw.heading(3, 'ACROSS')
-    for number, clue in puzzle.clues.across():
-        draw.line('{} {}'.format(number, clue))
-    draw.box_end()
-    
-    # disply DOWN clues
-    draw.box_begin()
-    draw.heading(3, 'DOWN')
-    for number, clue in puzzle.clues.down():
-        draw.line('{} {}'.format(number, clue))
-    draw.box_end()
+        # draw solution
+        draw.heading(2, 'Solution')
+        with draw.crossword(puzzle.block) as grid:
+            for row in puzzle:
+                grid.add_row([(get_literal(cell.puzzle), cell.solution) for cell in row])
 
-    draw.container_end()
-
-    # draw solution
-    draw.heading(2, 'Solution')
-    draw.grid_begin()
-    for row in puzzle:
-        draw.grid_append([(get_literal(cell.puzzle), cell.solution) for cell in row])
-    draw.grid_end()
-
-    draw.rights(puzzle.meta['rights'])
-    draw.finalize()
+        draw.rights(puzzle.meta['rights'])
 
 
 if __name__ == "__main__":
