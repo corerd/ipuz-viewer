@@ -1,6 +1,10 @@
+'''Convert IPUZ formatted crosswords to HTML'''
+
 import crossword
 import ipuz
+import sys
 
+from ntpath import basename
 from htmlpage import HtmlPage
 
 
@@ -22,6 +26,7 @@ def get_literal(cell_value):
 
 
 def viewer(ipuz_file_name, rendered_file_name):
+    print('Converting "{}" to "{}"'.format(ipuz_file_name, rendered_file_name))
     with open(ipuz_file_name) as puzzle_file:
         ipuz_dict = ipuz.read(puzzle_file.read())  # may raise ipuz.IPUZException    
     puzzle = crossword.from_ipuz(ipuz_dict)
@@ -57,11 +62,25 @@ def viewer(ipuz_file_name, rendered_file_name):
 
         draw.rights(puzzle.meta['rights'])
 
+    print('Done!')
+
+
+def main(argv):
+    if len(argv) != 3:
+        print('SYNTAX: {} <path-to-ipuz-files> <path-to-html-file>'
+                                            .format(basename(argv[0])))
+        return -1
+    viewer(argv[1], argv[2])
+    return 0
+
 
 if __name__ == "__main__":
-    print('Converting IPUZ to HTML...')
-
-    # Paths relative to VsCode workspace folder
-    viewer( 'ipuz-viewer/fixtures/ipuz/example.ipuz',
-            'crossword.html' )
-    print('Done!')
+    if len(sys.argv) > 1:
+        args = sys.argv
+    else:
+        # default arguments
+        # Paths relative to VsCode workspace folder
+        args = [ sys.argv[0],
+                'ipuz-viewer/fixtures/ipuz/example.ipuz',
+                'crossword.html' ]
+    exit(main(args))
